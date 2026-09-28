@@ -81,7 +81,7 @@ tests/
 ## 5. Step-by-Step Implementation Checklist
 
 ### Phase 1: Core Domain Engine & Data Layer
-- [ ] 1.1 Strict domain data models in `listguard/models.py` (`Action`, `PolicyBucket`, `ListingInput`, `PolicyResult`, `AuditReceipt`)
+- [x] 1.1 Strict domain data models in `listguard/models.py` (`Action`, `PolicyBucket`, `ListingInput`, `PolicyResult`, `AuditReceipt`)
 - [ ] 1.2 Closed-set taxonomy schema in `policy/buckets.json` enforcing `ok`, `weapon`, `animal`, `counterfeit`, `pii`, `other_illegal`, `unknown`
 - [ ] 1.3 SQLite audit receipts store in `listguard/storage.py` tracking listing hashes, moderation reasons, and `actor=human` sign-offs
 - [ ] 1.4 Text normalization and token compactor in `listguard/compactor.py`
