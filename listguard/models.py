@@ -224,16 +224,19 @@ class AuditReceipt(BaseModel):
         )
 
         if self.actor == 'human':
-            missing = [
-                name
-                for name, value in zip(override_fields, override_values)
-                if value is None
-            ]
-            if missing:
-                raise ValueError(
-                    'human override requires operator_id, override_action, '
-                    'override_reason, and overridden_at'
-                )
+            if self.operator_id is None:
+                raise ValueError('human sign-off requires operator_id')
+            if self.override_action is not None or self.override_reason is not None:
+                missing = [
+                    name
+                    for name, value in zip(override_fields, override_values)
+                    if value is None
+                ]
+                if missing:
+                    raise ValueError(
+                        'human override requires operator_id, override_action, '
+                        'override_reason, and overridden_at'
+                    )
         elif any(value is not None for value in override_values):
             raise ValueError(
                 'override fields require actor=human'
