@@ -20,7 +20,7 @@ from pydantic import (
 
 
 class Action(str, Enum):
-    '''The only permitted moderation actions for listing content.'''
+    '''The only permitted moderation actions for marketplace content.'''
 
     ALLOW = 'allow'
     QUEUE = 'queue'
@@ -38,6 +38,8 @@ class PolicyBucket(str, Enum):
     OTHER_ILLEGAL = 'other_illegal'
     UNKNOWN = 'unknown'
 
+
+ReceiptActor = Literal['system', 'human']
 
 ListingId = Annotated[
     str,
@@ -123,6 +125,10 @@ class ListingInput(BaseModel):
     )
 
 
+class Listing(ListingInput):
+    '''Compatibility name for the validated listing input schema.'''
+
+
 class PolicyResult(BaseModel):
     '''Validated output of classification and deterministic policy routing.'''
 
@@ -176,8 +182,8 @@ class PolicyResult(BaseModel):
         return self
 
 
-class AuditReceipt(BaseModel):
-    '''Immutable signed receipt for a listing decision or human override.'''
+class HumanOverride(BaseModel):
+    '''A human review command linked to an existing immutable receipt.'''
 
     model_config = ConfigDict(
         extra='forbid',
@@ -188,6 +194,57 @@ class AuditReceipt(BaseModel):
         validate_default=True,
     )
 
+    receipt_id: UUID = Field(
+        validation_alias=AliasChoices('receipt_id', 'original_receipt_id'),
+    )
+    action: Action = Field(
+        validation_alias=AliasChoices('action', 'override_action'),
+    )
+    reason: OverrideReason = Field(
+        validation_alias=AliasChoices('reason', 'override_reason'),
+    )
+    operator_id: OperatorId = Field(
+        validation_alias=AliasChoices('operator_id', 'reviewer_id'),
+    )
+    actor: Literal['human'] = 'human'
+    created_at: AwareDatetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        validation_alias=AliasChoices('created_at', 'overridden_at'),
+    )
+
+    @property
+    def original_receipt_id(self) -> UUID:
+        return self.receipt_id
+
+    @property
+    def override_action(self) -> Action:
+        return self.action
+
+    @property
+    def override_reason(self) -> str:
+        return self.reason
+
+    @property
+    def overridden_at(self) -> datetime:
+        return self.created_at
+
+
+class AuditReceipt(BaseModel):
+    '''Immutable signed receipt for a listing decision or human review.'''
+
+    model_config = ConfigDict(
+        extra='forbid',
+        frozen=True,
+        populate_by_name=True,
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        validate_default=True,
+    )
+
+    receipt_id: UUID = Field(
+        default_factory=uuid4,
+        validation_alias=AliasChoices('receipt_id', 'id'),
+    )
     listing_id: ListingId
     listing_hash: Sha256Hex
     result: PolicyResult = Field(
@@ -195,51 +252,99 @@ class AuditReceipt(BaseModel):
     )
     policy_version: PolicyVersion
     signature: Signature
-    receipt_id: UUID = Field(default_factory=uuid4)
-    receipt_version: Literal['1.0'] = '1.0'
+    previous_receipt_hash: Sha256Hex | None = None
+    original_receipt_id: UUID | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            'original_receipt_id',
+            'parent_receipt_id',
+        ),
+    )
+    actor: ReceiptActor = 'system'
+    operator_id: OperatorId | None = Field(
+        default=None,
+        validation_alias=AliasChoices('operator_id', 'reviewer_id'),
+    )
+    override_action: Action | None = None
+    override_reason: OverrideReason | None = None
     created_at: AwareDatetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         validation_alias=AliasChoices('created_at', 'timestamp'),
     )
-    previous_receipt_hash: Sha256Hex | None = None
-    actor: Literal['system', 'human'] = 'system'
-    operator_id: OperatorId | None = None
-    override_action: Action | None = None
-    override_reason: OverrideReason | None = None
-    overridden_at: AwareDatetime | None = None
+    overridden_at: AwareDatetime | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            'overridden_at',
+            'override_timestamp',
+        ),
+    )
+
+    @property
+    def effective_action(self) -> Action:
+        '''Return the human override action when one is present.'''
+        return self.override_action or self.result.action
 
     @model_validator(mode='after')
-    def enforce_human_override_attribution(self) -> AuditReceipt:
-        override_fields = (
-            'operator_id',
-            'override_action',
-            'override_reason',
-            'overridden_at',
+    def enforce_human_attribution(self) -> AuditReceipt:
+        has_override = any(
+            value is not None
+            for value in (
+                self.override_action,
+                self.override_reason,
+                self.overridden_at,
+            )
         )
-        override_values = (
-            self.operator_id,
-            self.override_action,
-            self.override_reason,
-            self.overridden_at,
+        has_complete_override = all(
+            value is not None
+            for value in (
+                self.override_action,
+                self.override_reason,
+                self.overridden_at,
+            )
         )
+
+        if has_override and not has_complete_override:
+            raise ValueError(
+                'override_action, override_reason, and overridden_at must '
+                'be provided together'
+            )
 
         if self.actor == 'human':
             if self.operator_id is None:
-                raise ValueError('human sign-off requires operator_id')
-            if self.override_action is not None or self.override_reason is not None:
-                missing = [
-                    name
-                    for name, value in zip(override_fields, override_values)
-                    if value is None
-                ]
-                if missing:
-                    raise ValueError(
-                        'human override requires operator_id, override_action, '
-                        'override_reason, and overridden_at'
-                    )
-        elif any(value is not None for value in override_values):
-            raise ValueError(
-                'override fields require actor=human'
-            )
+                raise ValueError(
+                    'Human receipts require an operator identifier'
+                )
+            return self
 
+        if self.operator_id is not None:
+            raise ValueError(
+                'operator_id may only identify a human operator; '
+                "system receipts must use actor='system'"
+            )
+        if has_override:
+            raise ValueError(
+                "Human overrides require actor='human'"
+            )
         return self
+
+
+__all__ = [
+    'Action',
+    'AuditReceipt',
+    'Description',
+    'HumanOverride',
+    'ImageMetadata',
+    'Listing',
+    'ListingId',
+    'ListingInput',
+    'OperatorId',
+    'OverrideReason',
+    'PolicyBucket',
+    'PolicyResult',
+    'PolicyVersion',
+    'ReceiptActor',
+    'ReasonCode',
+    'Sha256Hex',
+    'Signature',
+    'Title',
+]
