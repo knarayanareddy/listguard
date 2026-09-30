@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0f172a">
+  <title>ListGuard · Moderation Desk</title>
+  <style>
+    :root {
+      --background: #080d18;
+      --slate-950: #0f172a;
+      --slate-900: #111c30;
+      --slate-800: #172338;
+      --slate-700: #263650;
+      --slate-600: #3b4c66;
+      --text: #e5edf8;
+      --muted: #91a2ba;
+      --blue: #60a5fa;
+      --cyan: #38bdf8;
+      --allow: #34d399;
+      --queue: #fbbf24;
+      --block: #fb7185;
+      --danger: #f87171;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-width: 320px;
+      background: var(--background);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% -10%, rgba(56, 189, 248, 0.17), transparent 34rem),
+        radial-gradient(circle at 95% 0%, rgba(99, 102, 241, 0.14), transparent 30rem),
+        var(--background);
+      font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.55;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      width: min(1500px, 100%);
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 8px 2px 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(96, 165, 250, 0.4);
+      border-radius: 14px;
+      color: #bfdbfe;
+      background: linear-gradient(145deg, #172554, #0f172a);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.08);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: -0.08em;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 2px;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      margin-bottom: 4px;
+      font-size: 17px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .subtitle,
+    .muted {
+      color: var(--muted);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .health {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--slate-700);
+      border-radius: 999px;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.76);
+      font-size: 12px;
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--queue);
+      box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.1);
+    }
+
+    .health-dot.online {
+      background: var(--allow);
+      box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.1);
+    }
+
+    .constitutional-note {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      padding: 13px 16px;
+      border: 1px solid rgba(96, 165, 250, 0.27);
+      border-radius: 14px;
+      color: #cbd5e1;
+      background: linear-gradient(90deg, rgba(30, 64, 175, 0.2), rgba(15, 23, 42, 0.76));
+    }
+
+    .constitutional-note strong {
+      color: #dbeafe;
+    }
+
+    .shield {
+      flex: 0 0 auto;
+      color: var(--blue);
+      font-size: 18px;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.75fr) minmax(520px, 1.55fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--slate-700);
+      border-radius: var(--radius);
+      background: rgba(15, 23, 42, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--slate-700);
+      background: rgba(17, 28, 48, 0.72);
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--slate-700);
+      border-radius: 11px;
+      color: var(--text);
+      background: #0b1323;
+      transition: border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: rgba(96, 165, 250, 0.75);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+
+    textarea {
+      min-height: 355px;
+      resize: vertical;
+      padding: 14px;
+      font: 12px/1.55 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      tab-size: 2;
+    }
+
+    input,
+    select {
+      min-height: 42px;
+      padding: 9px 11px;
+    }
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid var(--slate-700);
+      border-radius: 11px;
+      color: var(--text);
+      background: var(--slate-800);
+      font-weight: 750;
+      transition: transform 100ms ease, border-color 100ms ease, background 100ms ease;
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: var(--slate-600);
+      background: #1c2a42;
+    }
+
+    .button.primary {
+      border-color: rgba(96, 165, 250, 0.58);
+      color: #eff6ff;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+
+    .button.accept {
+      border-color: rgba(52, 211, 153, 0.46);
+      color: #d1fae5;
+      background: rgba(6, 78, 59, 0.66);
+    }
+
+    .button.override {
+      border-color: rgba(251, 191, 36, 0.48);
+      color: #fef3c7;
+      background: rgba(120, 53, 15, 0.58);
+    }
+
+    .button.small {
+      min-height: 34px;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    kbd {
+      min-width: 22px;
+      padding: 2px 6px;
+      border: 1px solid #52627c;
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      color: #e2e8f0;
+      background: #1e293b;
+      font: 11px/1.4 "SFMono-Regular", Consolas, monospace;
+      text-align: center;
+    }
+
+    .empty-state {
+      display: grid;
+      min-height: 480px;
+      place-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      display: grid;
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 16px;
+      place-items: center;
+      border: 1px solid rgba(96, 165, 250, 0.32);
+      border-radius: 22px;
+      color: #93c5fd;
+      background: linear-gradient(145deg, #172554, #0f172a);
+      font-size: 28px;
+    }
+
+    .empty-state p {
+      max-width: 470px;
+      margin-right: auto;
+      margin-bottom: 0;
+      margin-left: auto;
+    }
+
+    .desk[hidden] {
+      display: none;
+    }
+
+    .decision-card {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      border: 1px solid var(--slate-700);
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(23, 35, 56, 0.94), rgba(11, 19, 35, 0.94));
+    }
+
+    .decision-card::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: var(--queue);
+      content: "";
+    }
+
+    .decision-card[data-action="allow"]::before {
+      background: var(--allow);
+    }
+
+    .decision-card[data-action="block"]::before {
+      background: var(--block);
+    }
+
+    .decision-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .action-badge,
+    .bucket-badge,
+    .actor-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--slate-700);
+      border-radius: 999px;
+      color: #cbd5e1;
+      background: rgba(15, 23, 42, 0.78);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .action-badge {
+      min-width: 92px;
+      justify-content: center;
+      border-color: rgba(251, 191, 36, 0.45);
+      color: #fde68a;
+      background: rgba(120, 53, 15, 0.25);
+    }
+
+    .decision-card[data-action="allow"] .action-badge {
+      border-color: rgba(52, 211, 153, 0.45);
+      color: #a7f3d0;
+      background: rgba(6, 78, 59, 0.28);
+    }
+
+    .decision-card[data-action="block"] .action-badge {
+      border-color: rgba(251, 113, 133, 0.48);
+      color: #fecdd3;
+      background: rgba(136, 19, 55, 0.26);
+    }
+
+    .confidence {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .confidence strong {
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    .listing-summary {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--slate-700);
+    }
+
+    .listing-summary h2 {
+      overflow-wrap: anywhere;
+    }
+
+    .description {
+      max-height: 230px;
+      margin-bottom: 0;
+      overflow: auto;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .reason-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .reason-chip {
+      padding: 5px 8px;
+      border: 1px solid var(--slate-700);
+      border-radius: 7px;
+      color: #bfdbfe;
+      background: rgba(30, 64, 175, 0.16);
+      font: 11px/1.4 "SFMono-Regular", Consolas, monospace;
+    }
+
+    .receipt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .receipt-field {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--slate-700);
+      border-radius: 10px;
+      background: rgba(11, 19, 35, 0.62);
+    }
+
+    .receipt-field span {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .receipt-field code {
+      display: block;
+      overflow: hidden;
+      color: #dbeafe;
+      font: 11px/1.5 "SFMono-Regular", Consolas, monospace;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .review-panel {
+      margin-top: 18px;
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: minmax(170px, 0.75fr) minmax(190px, 0.65fr) minmax(260px, 1.4fr);
+      gap: 12px;
+    }
+
+    .status {
+      min-height: 22px;
+      margin: 13px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status.error {
+      color: #fca5a5;
+    }
+
+    .status.success {
+      color: #6ee7b7;
+    }
+
+    .receipt-json {
+      max-height: 270px;
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      border-top: 1px solid var(--slate-700);
+      color: #bfdbfe;
+      background: #080f1d;
+      font: 11px/1.6 "SFMono-Regular", Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .policy-version {
+      padding: 8px 18px;
+      border-top: 1px solid var(--slate-700);
+      color: var(--muted);
+      background: rgba(8, 15, 29, 0.72);
+      font: 10px/1.4 "SFMono-Regular", Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 1050px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      textarea {
+        min-height: 280px;
+      }
+
+      .empty-state {
+        min-height: 320px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .shell {
+        padding: 14px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .health {
+        padding: 7px 9px;
+      }
+
+      .constitutional-note {
+        align-items: flex-start;
+      }
+
+      .panel-header,
+      .decision-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .review-grid,
+      .receipt-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button {
+        flex: 1 1 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">LG</div>
+        <div>
+          <h1>ListGuard</h1>
+          <p class="subtitle">Marketplace content moderation desk</p>
+        </div>
+      </div>
+      <div class="health" aria-live="polite">
+        <span class="health-dot" id="healthDot" aria-hidden="true"></span>
+        <span id="healthText">Checking service</span>
+      </div>
+    </header>
+
+    <section class="constitutional-note" aria-label="Constitutional moderation rule">
+      <span class="shield" aria-hidden="true">◆</span>
+      <div>
+        <strong>Content-only moderation.</strong>
+        ListGuard moderates listing content and never auto-bans a human person.
+        Every action is restricted to allow, queue, or block.
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel" aria-labelledby="ingestion-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="ingestion-title">Listing ingestion</h2>
+            <div class="muted">Paste one ListingInput JSON document</div>
+          </div>
+          <button class="button small" id="loadExampleButton" type="button">
+            Load example
+          </button>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="listingJson">Untrusted listing content</label>
+            <textarea
+              id="listingJson"
+              spellcheck="false"
+              autocomplete="off"
+              aria-describedby="ingestionHelp"
+            ></textarea>
+            <div class="muted" id="ingestionHelp" style="margin-top: 7px; font-size: 11px;">
+              Image OCR, labels, captions, and metadata are treated as untrusted input.
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="button primary" id="moderateButton" type="button">
+              Evaluate listing
+            </button>
+            <button class="button" id="formatButton" type="button">
+              Format JSON
+            </button>
+          </div>
+          <p class="status" id="ingestionStatus" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="decision-title">
+        <div class="panel-header">
+          <div>
+            <h2 id="decision-title">Moderation card</h2>
+            <div class="muted">System decision and immutable human review trail</div>
+          </div>
+          <button class="button small" id="copyReceiptButton" type="button" disabled>
+            Copy receipt
+          </button>
+        </div>
+
+        <div class="panel-body">
+          <div class="empty-state" id="emptyState">
+            <div>
+              <div class="empty-icon" aria-hidden="true">◇</div>
+              <h2>No listing evaluated</h2>
+              <p class="muted">
+                Submit a listing to generate a deterministic policy result and
+                signed SQLite audit receipt.
+              </p>
+            </div>
+          </div>
+
+          <div class="desk" id="desk" hidden>
+            <article class="decision-card" id="decisionCard">
+              <div class="decision-top">
+                <div>
+                  <span class="action-badge" id="actionBadge">queue</span>
+                  <h2 style="margin-top: 12px;" id="listingTitle">Listing</h2>
+                  <div class="muted" id="listingId"></div>
+                </div>
+                <div class="confidence">
+                  Confidence
+                  <strong id="confidenceValue">0%</strong>
+                </div>
+              </div>
+
+              <div class="listing-summary">
+                <h3>Submitted description</h3>
+                <p class="description" id="listingDescription"></p>
+              </div>
+
+              <div style="margin-top: 18px;">
+                <h3>Policy bucket</h3>
+                <span class="bucket-badge" id="bucketBadge">unknown</span>
+              </div>
+
+              <div style="margin-top: 18px;">
+                <h3>Reason codes</h3>
+                <ul class="reason-list" id="reasonList"></ul>
+              </div>
+
+              <div class="receipt-grid">
+                <div class="receipt-field">
+                  <span>Receipt ID</span>
+                  <code id="receiptId">—</code>
+                </div>
+                <div class="receipt-field">
+                  <span>Actor</span>
+                  <code id="actor">system</code>
+                </div>
+                <div class="receipt-field">
+                  <span>Listing hash</span>
+                  <code id="listingHash">—</code>
+                </div>
+                <div class="receipt-field">
+                  <span>Integrity signature</span>
+                  <code id="signature">—</code>
+                </div>
+              </div>
+            </article>
+
+            <section class="panel review-panel" aria-labelledby="review-title">
+              <div class="panel-header">
+                <div>
+                  <h2 id="review-title">Human review</h2>
+                  <div class="muted">Creates a new immutable actor=human receipt</div>
+                </div>
+                <span class="actor-badge" id="reviewActorBadge">audit required</span>
+              </div>
+              <div class="panel-body">
+                <div class="review-grid">
+                  <div>
+                    <label for="operatorId">Operator identifier</label>
+                    <input
+                      id="operatorId"
+                      name="operator_id"
+                      maxlength="128"
+                      autocomplete="username"
+                      placeholder="reviewer-42"
+                    >
+                  </div>
+                  <div>
+                    <label for="overrideAction">Content action</label>
+                    <select id="overrideAction" name="action">
+                      <option value="allow">allow</option>
+                      <option value="queue" selected>queue</option>
+                      <option value="block">block</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="overrideReason">Review reason</label>
+                    <input
+                      id="overrideReason"
+                      name="reason"
+                      maxlength="2000"
+                      placeholder="Document the evidence for this decision"
+                    >
+                  </div>
+                </div>
+                <div class="button-row">
+                  <button class="button accept" id="acceptButton" type="button" disabled>
+                    Accept system action <kbd>A</kbd>
+                  </button>
+                  <button class="button override" id="overrideButton" type="button" disabled>
+                    Record override <kbd>O</kbd>
+                  </button>
+                </div>
+                <p class="status" id="reviewStatus" role="status" aria-live="polite"></p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <pre class="receipt-json" id="receiptJson" hidden></pre>
+        <div class="policy-version">
+          Policy: {{ policy_version }} · Actions: allow / queue / block · No person bans
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    'use strict';
+
+    const exampleListing = {
+      listing_id: 'lg-safe-phone-01',
+      title: 'Working smartphone with charger',
+      description: 'Fully tested device with charger. Minor cosmetic wear.',
+      image_metadata: [
+        {
+          filename: 'phone-front.jpg',
+          labels: ['phone', 'used'],
+          seller_supplied_caption: 'Working phone'
+        }
+      ],
+      price: '249.99',
+      currency: 'EUR',
+      metadata: {
+        marketplace: 'example',
+        seller_id: 'seller-42'
+      }
+    };
+
+    const state = {
+      receipt: null,
+      currentListing: null,
+      busy: false
+    };
+
+    const elements = {
+      listingJson: document.getElementById('listingJson'),
+      listingTitle: document.getElementById('listingTitle'),
+      listingId: document.getElementById('listingId'),
+      listingDescription: document.getElementById('listingDescription'),
+      actionBadge: document.getElementById('actionBadge'),
+      bucketBadge: document.getElementById('bucketBadge'),
+      confidenceValue: document.getElementById('confidenceValue'),
+      reasonList: document.getElementById('reasonList'),
+      receiptId: document.getElementById('receiptId'),
+      actor: document.getElementById('actor'),
+      listingHash: document.getElementById('listingHash'),
+      signature: document.getElementById('signature'),
+      decisionCard: document.getElementById('decisionCard'),
+      emptyState: document.getElementById('emptyState'),
+      desk: document.getElementById('desk'),
+      receiptJson: document.getElementById('receiptJson'),
+      copyReceiptButton: document.getElementById('copyReceiptButton'),
+      acceptButton: document.getElementById('acceptButton'),
+      overrideButton: document.getElementById('overrideButton'),
+      overrideAction: document.getElementById('overrideAction'),
+      operatorId: document.getElementById('operatorId'),
+      overrideReason: document.getElementById('overrideReason'),
+      ingestionStatus: document.getElementById('ingestionStatus'),
+      reviewStatus: document.getElementById('reviewStatus'),
+      moderateButton: document.getElementById('moderateButton'),
+      formatButton: document.getElementById('formatButton'),
+      loadExampleButton: document.getElementById('loadExampleButton'),
+      healthDot: document.getElementById('healthDot'),
+      healthText: document.getElementById('healthText')
+    };
+
+    function setStatus(element, message, kind = '') {
+      element.textContent = message;
+      element.className = `status${kind ? ` ${kind}` : ''}`;
+    }
+
+    function setBusy(busy) {
+      state.busy = busy;
+      elements.moderateButton.disabled = busy;
+      elements.formatButton.disabled = busy;
+      elements.loadExampleButton.disabled = busy;
+      elements.acceptButton.disabled = busy || !state.receipt;
+      elements.overrideButton.disabled = busy || !state.receipt;
+      elements.copyReceiptButton.disabled = busy || !state.receipt;
+    }
+
+    function parseListing() {
+      const parsed = JSON.parse(elements.listingJson.value);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('The listing must be one JSON object.');
+      }
+      return parsed;
+    }
+
+    function renderReasons(reasonCodes) {
+      elements.reasonList.replaceChildren();
+      const reasons = Array.isArray(reasonCodes) ? reasonCodes : [];
+      if (reasons.length === 0) {
+        const item = document.createElement('li');
+        item.className = 'reason-chip';
+        item.textContent = 'no_policy_violation';
+        elements.reasonList.append(item);
+        return;
+      }
+
+      for (const reason of reasons) {
+        const item = document.createElement('li');
+        item.className = 'reason-chip';
+        item.textContent = String(reason);
+        elements.reasonList.append(item);
+      }
+    }
+
+    function renderReceipt(receipt, listing) {
+      const action = String(receipt.action || receipt.effective_action || 'unknown');
+      const bucket = String(receipt.bucket || 'unknown');
+      const confidence = Number(receipt.confidence || 0);
+      const reasons = receipt.reason_codes ||
+        (receipt.policy_result && receipt.policy_result.reason_codes) ||
+        [];
+
+      state.receipt = receipt;
+      state.currentListing = listing;
+
+      elements.emptyState.hidden = true;
+      elements.desk.hidden = false;
+      elements.receiptJson.hidden = false;
+      elements.decisionCard.dataset.action = action;
+
+      elements.actionBadge.textContent = action.toUpperCase();
+      elements.bucketBadge.textContent = bucket;
+      elements.confidenceValue.textContent = `${Math.round(confidence * 100)}%`;
+      elements.listingTitle.textContent = String(listing.title || 'Untitled listing');
+      elements.listingId.textContent = String(listing.listing_id || listing.id || '—');
+      elements.listingDescription.textContent = String(
+        listing.description || listing.text || 'No description supplied.'
+      );
+      elements.receiptId.textContent = String(receipt.receipt_id || receipt.id || '—');
+      elements.actor.textContent = String(receipt.actor || 'system');
+      elements.listingHash.textContent = String(receipt.listing_hash || '—');
+      elements.signature.textContent = String(receipt.signature || 'Stored externally');
+      elements.receiptJson.textContent = JSON.stringify(receipt, null, 2);
+      elements.overrideAction.value = action;
+
+      renderReasons(reasons);
+      setBusy(false);
+    }
+
+    async function apiRequest(path, options = {}) {
+      const response = await fetch(path, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        }
+      });
+
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch (_error) {
+        payload = null;
+      }
+
+      if (!response.ok) {
+        const detail = payload && payload.detail
+          ? payload.detail
+          : `Request failed with HTTP ${response.status}.`;
+        throw new Error(
+          typeof detail === 'string' ? detail : JSON.stringify(detail)
+        );
+      }
+
+      return payload;
+    }
+
+    async function moderateListing() {
+      if (state.busy) {
+        return;
+      }
+
+      setBusy(true);
+      setStatus(elements.ingestionStatus, 'Evaluating untrusted listing content…');
+
+      try {
+        const listing = parseListing();
+        const receipt = await apiRequest('/api/v1/moderate', {
+          method: 'POST',
+          body: JSON.stringify(listing)
+        });
+        renderReceipt(receipt, listing);
+        setStatus(
+          elements.ingestionStatus,
+          `Receipt ${receipt.receipt_id || receipt.id} created.`,
+          'success'
+        );
+        setStatus(elements.reviewStatus, '');
+      } catch (error) {
+        setStatus(elements.ingestionStatus, error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function validateReviewFields() {
+      const operatorId = elements.operatorId.value.trim();
+      const reason = elements.overrideReason.value.trim();
+
+      if (!operatorId) {
+        throw new Error('An operator identifier is required.');
+      }
+      if (!reason) {
+        throw new Error('A human review reason is required.');
+      }
+
+      return { operatorId, reason };
+    }
+
+    async function sendReview(decision) {
+      if (state.busy || !state.receipt) {
+        return;
+      }
+
+      setBusy(true);
+      setStatus(elements.reviewStatus, 'Writing immutable human audit receipt…');
+
+      try {
+        const { operatorId, reason } = validateReviewFields();
+        const receiptId = state.receipt.receipt_id || state.receipt.id;
+        const command = {
+          operator_id: operatorId,
+          decision,
+          reason
+        };
+
+        if (decision === 'override') {
+          command.action = elements.overrideAction.value;
+        }
+
+        const humanReceipt = await apiRequest(
+          `/api/v1/receipts/${encodeURIComponent(receiptId)}/override`,
+          {
+            method: 'POST',
+            body: JSON.stringify(command)
+          }
+        );
+
+        renderReceipt(humanReceipt, state.currentListing || {});
+        setStatus(
+          elements.reviewStatus,
+          `Human receipt ${humanReceipt.receipt_id || humanReceipt.id} recorded.`,
+          'success'
+        );
+      } catch (error) {
+        setStatus(elements.reviewStatus, error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function formatListing() {
+      try {
+        elements.listingJson.value = JSON.stringify(parseListing(), null, 2);
+        setStatus(elements.ingestionStatus, 'JSON formatted.', 'success');
+      } catch (error) {
+        setStatus(elements.ingestionStatus, error.message, 'error');
+      }
+    }
+
+    function loadExample() {
+      elements.listingJson.value = JSON.stringify(exampleListing, null, 2);
+      setStatus(elements.ingestionStatus, 'Safe phone example loaded.', 'success');
+    }
+
+    async function copyReceipt() {
+      if (!state.receipt) {
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(state.receipt, null, 2));
+        setStatus(elements.reviewStatus, 'Receipt copied.', 'success');
+      } catch (_error) {
+        setStatus(
+          elements.reviewStatus,
+          'Clipboard access is unavailable; select the receipt JSON manually.',
+          'error'
+        );
+      }
+    }
+
+    async function checkHealth() {
+      try {
+        const payload = await apiRequest('/health');
+        if (payload.status === 'ok') {
+          elements.healthDot.classList.add('online');
+          elements.healthText.textContent = 'Service healthy';
+        } else {
+          elements.healthText.textContent = 'Service degraded';
+        }
+      } catch (_error) {
+        elements.healthText.textContent = 'Service unavailable';
+      }
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const target = event.target;
+      const isEditing = target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+
+      if (
+        isEditing ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.repeat
+      ) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+      if (key === 'a') {
+        event.preventDefault();
+        sendReview('accept');
+      } else if (key === 'o') {
+        event.preventDefault();
+        sendReview('override');
+      }
+    });
+
+    elements.moderateButton.addEventListener('click', moderateListing);
+    elements.formatButton.addEventListener('click', formatListing);
+    elements.loadExampleButton.addEventListener('click', loadExample);
+    elements.acceptButton.addEventListener('click', () => sendReview('accept'));
+    elements.overrideButton.addEventListener('click', () => sendReview('override'));
+    elements.copyReceiptButton.addEventListener('click', copyReceipt);
+
+    loadExample();
+    checkHealth();
+  </script>
+</body>
+</html>

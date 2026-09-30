@@ -93,8 +93,8 @@ tests/
 - [x] 2.4 Comprehensive unit tests in `tests/test_policy.py` verifying 0% allow rate on `lg-inject-01` and accurate counterfeit flagging
 
 ### Phase 3: Application API & Moderation Desk
-- [ ] 3.1 FastAPI application in `listguard/api.py` with `/api/v1/moderate`, `/api/v1/receipts/{id}`, `/api/v1/receipts/{id}/override`, and `/health`
-- [ ] 3.2 Self-contained dark-slate moderation desk dashboard in `web/templates/index.html` with keyboard shortcuts (`A` = Accept, `O` = Override)
+- [x] 3.1 FastAPI application in `listguard/api.py` with `/api/v1/moderate`, `/api/v1/receipts/{id}`, `/api/v1/receipts/{id}/override`, and `/health`
+- [x] 3.2 Self-contained dark-slate moderation desk dashboard in `web/templates/index.html` with keyboard shortcuts (`A` = Accept, `O` = Override)
 - [ ] 3.3 Command-line interface and demo runner in `listguard/main.py` (`python main.py demo` and `python main.py serve`)
 - [ ] 3.4 API integration tests in `tests/test_api.py` verifying real HTTP moderation requests and human override flows
 
