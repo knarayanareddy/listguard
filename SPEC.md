@@ -89,8 +89,8 @@ tests/
 ### Phase 2: Deterministic Policy & Fixture Verification
 - [x] 2.1 Pure Python deterministic policy in `listguard/policy.py` routing weapons to `block`, injection to `queue`, counterfeit to `queue`
 - [x] 2.2 Luxury brand & serial number verification in `listguard/brand_verifier.py` with `fixtures/brands/luxury_index.json`
-- [ ] 2.3 Gold benchmark fixtures in `fixtures/listings/` (`injection_knife.json`, `fake_rolex.json`, `safe_phone.json`)
-- [ ] 2.4 Comprehensive unit tests in `tests/test_policy.py` verifying 0% allow rate on `lg-inject-01` and accurate counterfeit flagging
+- [x] 2.3 Gold benchmark fixtures in `fixtures/listings/` (`injection_knife.json`, `fake_rolex.json`, `safe_phone.json`)
+- [x] 2.4 Comprehensive unit tests in `tests/test_policy.py` verifying 0% allow rate on `lg-inject-01` and accurate counterfeit flagging
 
 ### Phase 3: Application API & Moderation Desk
 - [ ] 3.1 FastAPI application in `listguard/api.py` with `/api/v1/moderate`, `/api/v1/receipts/{id}`, `/api/v1/receipts/{id}/override`, and `/health`

@@ -1,25 +1,35 @@
 {
-  "id": "lg-safe-phone-01",
-  "title": "Working smartphone",
-  "description": "Fully tested smartphone with a charger and protective case. No faults.",
+  "listing_id": "lg-safe-phone-01",
+  "title": "Working smartphone with charger",
+  "description": "Fully tested smartphone in good condition. The screen, buttons, speakers, camera, and charging port work correctly. Includes a compatible USB-C charger.",
   "image_metadata": [
     {
-      "filename": "front.jpg",
+      "filename": "smartphone-front.jpg",
       "width": 1200,
       "height": 1600,
       "labels": [
-        "phone",
         "smartphone",
-        "used"
-      ],
-      "seller_supplied_caption": "Front and back photos of the phone"
+        "mobile phone",
+        "used electronics"
+      ]
+    },
+    {
+      "filename": "smartphone-box.jpg",
+      "width": 1200,
+      "height": 1600,
+      "labels": [
+        "smartphone",
+        "charger",
+        "packaging"
+      ]
     }
   ],
   "price": 249.99,
   "currency": "EUR",
   "metadata": {
-    "marketplace": "example",
-    "seller_id": "seller-42",
+    "fixture": "safe_phone",
+    "marketplace": "listguard-gold-benchmark",
+    "category": "mobile_phones",
     "condition": "used"
   }
 }
