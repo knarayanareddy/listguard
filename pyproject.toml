@@ -29,8 +29,9 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["listguard*", "policy*"]
-namespaces = true
+include = ["listguard*", "policy*", "fixtures*"]
 
 [tool.setuptools.package-data]
 policy = ["buckets.json"]
+"fixtures.brands" = ["*.json"]
+"fixtures.listings" = ["*.json"]

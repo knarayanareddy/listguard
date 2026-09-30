@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "default_currency": "EUR",
+  "brands": {
+    "rolex": {
+      "name": "Rolex",
+      "aliases": [
+        "Rolex",
+        "Rolex Watches",
+        "Rolex Submariner"
+      ],
+      "minimum_prices": {
+        "EUR": 5000,
+        "GBP": 4000,
+        "USD": 5500
+      },
+      "serial_patterns": [
+        "(?i)^(?=.*\\d)[A-Z0-9]{6,12}$"
+      ],
+      "valid_serials": [],
+      "serial_prefixes": []
+    },
+    "gucci": {
+      "name": "Gucci",
+      "aliases": [
+        "Gucci",
+        "Gucci Bags"
+      ],
+      "minimum_prices": {
+        "EUR": 800,
+        "GBP": 650,
+        "USD": 900
+      },
+      "serial_patterns": [
+        "(?i)^[A-Z0-9]{6,14}$"
+      ],
+      "valid_serials": [],
+      "serial_prefixes": []
+    },
+    "louis_vuitton": {
+      "name": "Louis Vuitton",
+      "aliases": [
+        "Louis Vuitton",
+        "Louis Vuitton Bags",
+        "LV Bags",
+        "LOUX VUITTON",
+        "LOUX_VUITTON"
+      ],
+      "minimum_prices": {
+        "EUR": 1200,
+        "GBP": 1000,
+        "USD": 1350
+      },
+      "serial_patterns": [
+        "(?i)^(?:[A-Z]{2,4})?[A-Z0-9]{4,12}$"
+      ],
+      "valid_serials": [],
+      "serial_prefixes": []
+    }
+  }
+}

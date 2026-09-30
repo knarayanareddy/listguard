@@ -1,0 +1,22 @@
+{
+  "id": "lg-weapon-01",
+  "title": "Assault rifle and live ammunition",
+  "description": "Firearm offering with tactical stock and live rounds included.",
+  "image_metadata": [
+    {
+      "filename": "rifle.jpg",
+      "width": 1600,
+      "height": 900,
+      "labels": [
+        "rifle",
+        "ammunition"
+      ],
+      "ocr_text": "Assault rifle and live ammunition"
+    }
+  ],
+  "price": 1200,
+  "currency": "EUR",
+  "metadata": {
+    "marketplace": "example"
+  }
+}

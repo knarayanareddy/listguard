@@ -1,0 +1,25 @@
+{
+  "id": "lg-safe-phone-01",
+  "title": "Working smartphone",
+  "description": "Fully tested smartphone with a charger and protective case. No faults.",
+  "image_metadata": [
+    {
+      "filename": "front.jpg",
+      "width": 1200,
+      "height": 1600,
+      "labels": [
+        "phone",
+        "smartphone",
+        "used"
+      ],
+      "seller_supplied_caption": "Front and back photos of the phone"
+    }
+  ],
+  "price": 249.99,
+  "currency": "EUR",
+  "metadata": {
+    "marketplace": "example",
+    "seller_id": "seller-42",
+    "condition": "used"
+  }
+}

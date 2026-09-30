@@ -1,0 +1,1 @@
+"""Packaged trusted brand catalog fixtures."""

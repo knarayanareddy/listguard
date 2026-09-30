@@ -1,0 +1,24 @@
+{
+  "id": "lg-fake-rolex-01",
+  "title": "Rolex Submariner - Replica AAA quality, €250",
+  "description": "Replica AAA quality Rolex Submariner with a matching box and paperwork.",
+  "image_metadata": [
+    {
+      "filename": "rolex-submariner.jpg",
+      "width": 1400,
+      "height": 1400,
+      "labels": [
+        "luxury watch",
+        "Rolex Submariner"
+      ],
+      "ocr_text": "Rolex Submariner AAA replica"
+    }
+  ],
+  "price": 250,
+  "currency": "EUR",
+  "metadata": {
+    "marketplace": "example",
+    "serial_number": "RX1234567",
+    "condition": "used"
+  }
+}

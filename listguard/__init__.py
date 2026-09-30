@@ -1,5 +1,22 @@
-'''ListGuard domain package.'''
+"""ListGuard domain package."""
 
+from listguard.brand_verifier import (
+    DEFAULT_BRAND_INDEX_PATH,
+    DEFAULT_LUXURY_INDEX_PATH,
+    BrandCatalog,
+    BrandCatalogError,
+    BrandRule,
+    BrandVerification,
+    BrandVerificationResult,
+    BrandVerifier,
+    LuxuryBrandIndex,
+    LuxuryBrandVerifier,
+    load_brand_catalog,
+    load_luxury_catalog,
+    load_luxury_index,
+    verify_brand_and_serial,
+    verify_listing,
+)
 from listguard.compactor import CompactionResult, WinnowCompactor
 from listguard.models import (
     Action,
@@ -10,6 +27,16 @@ from listguard.models import (
     PolicyBucket,
     PolicyResult,
     ReceiptActor,
+)
+from listguard.policy import (
+    DETERMINISTIC_POLICY_VERSION,
+    DeterministicPolicy,
+    PolicyEngine,
+    PolicyRouter,
+    PolicyRoutingError,
+    evaluate_listing,
+    route_bucket,
+    route_policy,
 )
 from listguard.storage import (
     ReceiptConflictError,
@@ -35,13 +62,28 @@ validate_policy_bucket_alignment(PolicyBucket)
 __all__ = [
     'Action',
     'AuditReceipt',
+    'BrandCatalog',
+    'BrandCatalogError',
+    'BrandRule',
+    'BrandVerification',
+    'BrandVerificationResult',
+    'BrandVerifier',
     'CompactionResult',
+    'DEFAULT_BRAND_INDEX_PATH',
+    'DEFAULT_LUXURY_INDEX_PATH',
+    'DETERMINISTIC_POLICY_VERSION',
+    'DeterministicPolicy',
     'HumanOverride',
     'Listing',
     'ListingInput',
+    'LuxuryBrandIndex',
+    'LuxuryBrandVerifier',
     'POLICY_BUCKETS',
     'PolicyBucket',
+    'PolicyEngine',
     'PolicyResult',
+    'PolicyRouter',
+    'PolicyRoutingError',
     'ReceiptActor',
     'ReceiptConflictError',
     'ReceiptNotFoundError',
@@ -53,8 +95,16 @@ __all__ = [
     'WinnowCompactor',
     'compute_listing_hash',
     'compute_receipt_hash',
+    'evaluate_listing',
     'hash_listing',
     'hash_receipt',
+    'load_brand_catalog',
+    'load_luxury_catalog',
+    'load_luxury_index',
+    'route_bucket',
+    'route_policy',
+    'verify_brand_and_serial',
+    'verify_listing',
 ]
 
 __version__ = '0.1.0'
