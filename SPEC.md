@@ -101,4 +101,4 @@ tests/
 ### Phase 4: Production Hardening & CI
 - [x] 4.1 Pyproject.toml and requirements.txt with all dependencies pinned (`fastapi`, `uvicorn`, `pydantic`, `jinja2`, `pytest`, `httpx`)
 - [x] 4.2 GitHub Actions CI workflow in `.github/workflows/ci.yml` running test suite on pull requests
-- [ ] 4.3 Production README with architectural flow diagram, policy bucket documentation, and quickstart guide
+- [x] 4.3 Production README with architectural flow diagram, policy bucket documentation, and quickstart guide
