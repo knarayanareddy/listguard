@@ -1,37 +1,37 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = [
+    "setuptools==78.1.1",
+    "wheel==0.45.1",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "listguard"
 version = "0.1.0"
-description = "Online marketplace Trust & Safety ingestion control plane (EU DSA compliance)"
+description = "Deterministic marketplace listing trust and safety control plane"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.110.0",
-    "uvicorn>=0.28.0",
-    "pydantic>=2.6.0",
-    "jinja2>=3.1.3",
-    "python-multipart>=0.0.9",
-    "httpx>=0.27.0",
-    "rich>=13.7.0",
+    "fastapi==0.115.12",
+    "uvicorn==0.34.2",
+    "pydantic==2.11.5",
+    "jinja2==3.1.6",
+    "pytest==8.3.5",
+    "httpx==0.28.1",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0.0",
-    "pytest-asyncio>=0.23.0",
-]
-
-[tool.setuptools]
-include-package-data = true
+[project.scripts]
+listguard = "listguard.main:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["listguard*", "policy*", "fixtures*"]
+include = ["listguard*"]
+exclude = ["fixtures*", "tests*"]
+namespaces = false
 
-[tool.setuptools.package-data]
-policy = ["buckets.json"]
-"fixtures.brands" = ["*.json"]
-"fixtures.listings" = ["*.json"]
+[tool.pytest.ini_options]
+minversion = "8.3"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-config --strict-markers"
+xfail_strict = true
